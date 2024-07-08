@@ -1,0 +1,7 @@
+{
+    "readcount.bam": "./test_files/pairedMapped_sorted_renamed.bam",
+    "readcount.gff": "./test_files/nmdc_xxxxxxx_functional_annotation_renamed.gff",
+    "readcount.rna_type": "aRNA",
+    "readcount.proj_id":"nmdc:xxxxxxx",
+    "readcount.map": "./test_files/mapfile.map"
+}
