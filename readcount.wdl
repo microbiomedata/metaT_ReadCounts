@@ -8,7 +8,7 @@ workflow readcount {
     File bam
     File gff
     File? map
-    String rna_type
+    String? rna_type
     String container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
     Int cpu = 1
     String memory = "100G"
@@ -66,7 +66,7 @@ workflow readcount {
 
 task prepare  {
   input{
-    String rna_type 
+    String? rna_type 
     File gff
     File? map
     String mapped = if (defined(map)) then true else false
@@ -119,7 +119,6 @@ task count {
     File gff
     String proj_id
     String prefix=sub(proj_id, ":", "_")
-    String out = "~{prefix}.readcount"
     String rna_type
     String container
     Int cpu
@@ -134,14 +133,14 @@ task count {
     -b ~{bam} \
     -m ~{map} \
     -g ~{gff} \
-    -o ~{out} \
+    -o "~{prefix}.readcount" \
     ~{rna_type}
     >>>
 
   output{
-   File   tab = out
-   File? log="~{out}"+".Stats.log"
-   File? ig="~{out}"+".intergenic"
+   File   tab = "~{prefix}.readcount"
+   File? log="~{prefix}.readcount.Stats.log"
+   File? ig="~{prefix}.readcount.intergenic"
   }
  
     runtime {
