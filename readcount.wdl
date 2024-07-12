@@ -60,7 +60,7 @@ workflow readcount {
     bam: "BAM file output from MetaT Assembly"
     gff: "Functional GFF file output from MetaG Annotation"
     out: "Out directory or string to name files"
-    rna_type: "RNA strandedness, either 'aRNA' or 'non_stranded_RNA'"
+    rna_type: "RNA strandedness, either left blank, 'aRNA', or 'non_stranded_RNA'"
 	}
 }
 

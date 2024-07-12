@@ -55,7 +55,7 @@ The script is called as such within the WDL.
       -m ~{map} \       # map file auto generated or user upload
       -g ~{gff} \       # input GFF
       -o ~{out} \       # prefix for output files (project ID)
-      ~{rna_type}       # '-aRNA yes' or '-non_stranded yes'
+      ~{rna_type}       # left blank, '-aRNA yes', or '-non_stranded yes'
 ```
 
 ## Output files
