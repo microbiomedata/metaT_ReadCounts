@@ -12,14 +12,14 @@ workflow readcount {
     String container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
     Int cpu = 1
     String memory = "100G"
-    String time = "6:00:00"
+    String time = "360"
   }
 
   call prepare {
     input: 
     rna_type=rna_type,
     gff = gff,
-    map = map,
+    map_in = map,
     container = container,
     cpu = cpu,
     memory = memory,
@@ -31,7 +31,7 @@ workflow readcount {
     bam = bam, 
     gff = gff, 
     proj_id = proj_id,
-    map = prepare.map, 
+    map = prepare.map_out, 
     rna_type=prepare.type_list[0], 
     container = container,
     cpu = cpu,
@@ -68,8 +68,8 @@ task prepare  {
   input{
     String? rna_type 
     File gff
-    File? map
-    String mapped = if (defined(map)) then true else false
+    File? map_in
+    Boolean mapped = if (defined(map_in)) then true else false
     String mapfile = "mapfile.map" 
     String container
     Int cpu
@@ -82,7 +82,7 @@ task prepare  {
     # generate map file from gff scaffold names
 
     if [ "~{mapped}"  = true ] ; then
-      ln -s ~{map} ~{mapfile} || ln ~{map} ~{mapfile}  
+      ln -s ~{map_in} ~{mapfile} || ln ~{map_in} ~{mapfile}  
       else  
           awk '{print $1 "\t" $1}' ~{gff} > ~{mapfile}
      fi
@@ -99,7 +99,7 @@ task prepare  {
   >>>
 
   output{
-    File map = "mapfile.map" 
+    File map_out = "mapfile.map" 
     Array[String] type_list=read_lines(stdout())
    }
 
@@ -107,7 +107,7 @@ task prepare  {
         docker: container
         cpu: cpu
         memory: memory
-        time: time
+        runtime_minutes: time
     }
  }
 
@@ -147,7 +147,7 @@ task count {
         docker: container
         cpu: cpu
         memory: memory
-        time: time
+        runtime_minutes: time
     }
 
 }
@@ -182,7 +182,7 @@ task make_info_file {
         docker: container
         cpu: cpu
         memory: memory
-        time: time
+        runtime_minutes: time
     }
 
 }
