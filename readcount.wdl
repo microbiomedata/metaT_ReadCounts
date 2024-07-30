@@ -8,7 +8,7 @@ workflow readcount {
     File bam
     File gff
     File? map
-    String? rna_type
+    String rna_type = " "
     String container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
     Int cpu = 1
     String memory = "100G"
@@ -60,7 +60,7 @@ workflow readcount {
     bam: "BAM file output from MetaT Assembly"
     gff: "Functional GFF file output from MetaG Annotation"
     out: "Out directory or string to name files"
-    rna_type: "RNA strandedness, either left blank, 'aRNA', or 'non_stranded_RNA'"
+    rna_type: "RNA strandedness, default blank, 'aRNA', or 'non_stranded_RNA'"
 	}
 }
 
