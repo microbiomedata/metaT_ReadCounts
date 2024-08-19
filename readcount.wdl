@@ -48,11 +48,21 @@ workflow readcount {
     proj_id = proj_id
   }
 
+  call finish_count {
+    input:
+    container = container,
+    proj_id = proj_id, 
+    count_table = count.tab,
+    count_ig = count.ig,
+    count_log = count.log,
+    readcount_info = make_info_file.readcount_info
+  }
+
   output{
-   File count_table = count.tab
-   File? count_ig = count.ig
-   File? count_log = count.log
-   File info_file = make_info_file.readcount_info
+   File count_table = finish_count.final_count_table
+    File? count_ig = finish_count.final_count_ig
+    File? count_log = finish_count.final_count_log
+    File readcount_info = finish_count.final_readcount_info
    
   }
   parameter_meta {
@@ -133,14 +143,14 @@ task count {
     -b ~{bam} \
     -m ~{map} \
     -g ~{gff} \
-    -o "~{prefix}.readcount" \
+    -o "~{prefix}.rnaseq_gea" \
     ~{rna_type}
     >>>
 
   output{
-   File   tab = "~{prefix}.readcount"
-   File? log="~{prefix}.readcount.Stats.log"
-   File? ig="~{prefix}.readcount.intergenic"
+   File   tab = "~{prefix}.rnaseq_gea"
+   File? log="~{prefix}.rnaseq_gea.Stats.log"
+   File? ig="~{prefix}.rnaseq_gea.intergenic"
   }
  
     runtime {
@@ -185,4 +195,40 @@ task make_info_file {
         runtime_minutes: time
     }
 
+}
+
+task finish_count {
+  input {
+    File   count_table
+    File?  count_log
+    File?  count_ig
+    File   readcount_info
+    String container
+    String proj_id
+    String prefix=sub(proj_id, ":", "_")
+  }
+
+    command<<<
+
+        set -oeu pipefail
+        end=`date --iso-8601=seconds`
+        ln ~{count_table} ~{prefix}.rnaseq_gea.txt || ln -s ~{count_table} ~{prefix}.rnaseq_gea.txt
+        ~{if defined(count_ig) then "ln ~{count_ig} ~{prefix}.rnaseq_gea.intergenic.txt || ln -s ~{count_ig} ~{prefix}.rnaseq_gea.intergenic.txt" else ""}
+        ~{if defined(count_log) then "ln ~{count_log} ~{prefix}.readcount.stats.log || ln -s ~{count_log} ~{prefix}.readcount.stats.log" else ""}
+        ln ~{readcount_info} ~{prefix}_readcount.info || ln -s ln ~{readcount_info} ~{prefix}_readcount.info
+
+
+    >>>
+    output {
+        File final_count_table = "~{prefix}.rnaseq_gea.txt"
+        File? final_count_ig = "~{prefix}.rnaseq_gea.intergenic.txt"
+        File? final_count_log = "~{prefix}.readcount.stats.log"
+        File final_readcount_info = "~{prefix}_readcount.info"
+    }
+
+    runtime {
+        docker: container
+        memory: "1 GiB"
+        cpu:  1
+    }
 }
