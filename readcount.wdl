@@ -50,12 +50,15 @@ workflow readcount {
 
   call finish_count {
     input:
-    container = container,
     proj_id = proj_id, 
     count_table = count.tab,
     count_ig = count.ig,
     count_log = count.log,
-    readcount_info = make_info_file.readcount_info
+    readcount_info = make_info_file.readcount_info,
+    container = container,
+    cpu = cpu,
+    memory = memory,
+    time = time
   }
 
   output{
@@ -203,9 +206,12 @@ task finish_count {
     File?  count_log
     File?  count_ig
     File   readcount_info
-    String container
     String proj_id
     String prefix=sub(proj_id, ":", "_")
+    String container
+    Int cpu
+    String memory
+    String time
   }
 
     command<<<
