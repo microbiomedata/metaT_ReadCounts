@@ -228,7 +228,8 @@ task finish_count {
 
     runtime {
         docker: container
-        memory: "1 GiB"
-        cpu:  1
+        cpu: cpu
+        memory: memory
+        runtime_minutes: time
     }
 }
