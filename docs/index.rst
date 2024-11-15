@@ -13,7 +13,8 @@ The repository is based off JGI's metatranscriptomic analysis package for transc
 
 The script is called as such within the WDL.
 
-.. code-block:: 
+.. code-block:: bash
+
    readCov_metaTranscriptome_2k20.pl \
          -b ~{bam} \       # input BAM
          -m ~{map} \       # map file auto generated or user upload
@@ -26,24 +27,25 @@ Workflow Availability
 ---------------------
 The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadCounts/ and the corresponding Docker image is available in DockerHub: 
 
- * `dongyingwu/rnaseqct:1.1 <https://hub.docker.com/r/dongyingwu/rnaseqct>`_
+* `dongyingwu/rnaseqct:1.1 <https://hub.docker.com/r/dongyingwu/rnaseqct>`_
 
 
 Requirements for Execution (recommendations are in italics):  
 ---------------------------------------------------------
 
-   * WDL-capable Workflow Execution Tool *(Cromwell)*
-   * Container Runtime that can load Docker images *(Docker v2.1.0.3 or higher)*
+* WDL-capable Workflow Execution Tool *(Cromwell)*
+* Container Runtime that can load Docker images *(Docker v2.1.0.3 or higher)*
 
 Hardware Requirements: 
 ----------------------
-   * Memory: >100 GB RAM
+
+* Memory: >100 GB RAM
 
 Workflow Dependencies
 ---------------------
-   * Third party software (This is included in the Docker image.)  
-      * samtools 1.15
-      * readCov_metaTranscriptome_2k20.pl
+Third party software (This is included in the Docker image.)  
+   * samtools 1.15
+   * readCov_metaTranscriptome_2k20.pl
 
 
 Sample datasets
@@ -75,7 +77,7 @@ An example JSON file is shown below:
 
 
 The map file connects the naming schemes between the GFF and BAM files. If the naming scheme is the same, the map file can either be generated automatically if none is specified, or user can make a tsv with two columns of the names from the GFF file. 
-The RNA type inputs are include nothing, :code:`aRNA`, or :code:`non_stranded_RNA`, which are transformed to script inputs :code:`(default)`, :code:`-aRNA yes`, or :code:`-non_stranded yes`, respectively. This is the explanation from the script itself:
+The RNA type inputs are include nothing, :code:`aRNA`, or :code:`non_stranded_RNA`, which are transformed to script inputs :code:`(default blank)`, :code:`-aRNA yes`, or :code:`-non_stranded yes`, respectively. This is the explanation from the script itself:
 
 .. list-table:: 
    :header-rows: 1
