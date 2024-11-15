@@ -43,7 +43,9 @@ Hardware Requirements:
 
 Workflow Dependencies
 ---------------------
+
 Third party software (This is included in the Docker image.)  
+
    * samtools 1.15
    * readCov_metaTranscriptome_2k20.pl
 
