@@ -53,11 +53,11 @@ Third party software (This is included in the Docker image.)
 Sample datasets
 ---------------
 
-* Processed Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. 
- * The processed BAM file is available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/assembly_output/SRR11678315-int-0.1_pairedMapped_sorted.bam>`_
- * The proccessed GFF functional annotation file is available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/annotation_output/SRR11678315-int-0.1_functional_annotation.gff>`_
- * The generated mapping file file is available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/annotation_output/SRR11678315-int-0.1_contig_names_mapping.tsv>`_
- * The sample read count outputs are available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/readcounts_output/>`_
++ Processed Metatranscriptome of soil microbial communities from the East River watershed near Crested Butte, Colorado, United States - ER_RNA_119 (`SRR11678315 <https://www.ncbi.nlm.nih.gov/sra/SRX8239222>`_) with `metadata available in the NMDC Data Portal <https://data.microbiomedata.org/details/study/nmdc:sty-11-dcqce727>`_. 
+ + The processed BAM file is available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/assembly_output/SRR11678315-int-0.1_pairedMapped_sorted.bam>`_
+ + The proccessed GFF functional annotation file is available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/annotation_output/SRR11678315-int-0.1_functional_annotation.gff>`_
+ + The generated mapping file file is available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/annotation_output/SRR11678315-int-0.1_contig_names_mapping.tsv>`_
+ + The sample read count outputs are available `here <https://portal.nersc.gov/cfs/m3408/test_data/metaT/SRR11678315/readcounts_output/>`_
 
 
 
