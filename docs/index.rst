@@ -46,8 +46,8 @@ Workflow Dependencies
 
 Third party software (This is included in the Docker image.)  
 
-   * samtools 1.15
-   * readCov_metaTranscriptome_2k20.pl
+* SAMTOOLS v1.15
+* readCov_metaTranscriptome_2k20.pl
 
 
 Sample datasets
@@ -127,7 +127,8 @@ This is a sample of the read count statistics
    Overall percentage of expected mapping	50.02%
 
 
-### Description of IMG metatranscriptome data file.
+Description of IMG metatranscriptome data file
+------
 
 IMG provides expression values and read counts for gene features predicted on the contigs, be it self-assembly of metatranscriptome or another dataset to which the metatranscriptome reads were mapped. Expression values are computed as mean and median per-base coverage of the sequence within the coordinates of the feature.
 
