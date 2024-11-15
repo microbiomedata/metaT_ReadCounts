@@ -9,7 +9,7 @@ MetaT Read Counts Workflow (v0.0.5)
 Workflow Overview
 -----------------
 This workflow generates tab separated read count files from BAM and GFF files. 
-The repository is based off JGI's metatranscriptomic analysis package for transcriptomic reads and uses SAMTOOLS (1.15) in the pipeline `readCov_metaTranscriptome_2k20.pl`.
+The repository is based off JGI's metatranscriptomic analysis package for transcriptomic reads and uses SAMTOOLS (1.15) in the pipeline :code:`readCov_metaTranscriptome_2k20.pl`.
 
 The script is called as such within the WDL.
 
@@ -25,24 +25,25 @@ The script is called as such within the WDL.
 Workflow Availability
 ---------------------
 The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadCounts/ and the corresponding Docker image is available in DockerHub: 
-* `dongyingwu/rnaseqct:1.1 <https://hub.docker.com/r/dongyingwu/rnaseqct>`_
+
+ * `dongyingwu/rnaseqct:1.1 <https://hub.docker.com/r/dongyingwu/rnaseqct>`_
 
 
 Requirements for Execution (recommendations are in italics):  
 ---------------------------------------------------------
 
-* WDL-capable Workflow Execution Tool *(Cromwell)*
-* Container Runtime that can load Docker images *(Docker v2.1.0.3 or higher)*
+   * WDL-capable Workflow Execution Tool *(Cromwell)*
+   * Container Runtime that can load Docker images *(Docker v2.1.0.3 or higher)*
 
 Hardware Requirements: 
 ----------------------
-* Memory: >100 GB RAM
+   * Memory: >100 GB RAM
 
 Workflow Dependencies
 ---------------------
-* Third party software (This is included in the Docker image.)  
-   * samtools 1.15
-   * readCov_metaTranscriptome_2k20.pl
+   * Third party software (This is included in the Docker image.)  
+      * samtools 1.15
+      * readCov_metaTranscriptome_2k20.pl
 
 
 Sample datasets
@@ -52,6 +53,7 @@ Sample datasets
 
 Input
 ------
+
 A JSON file containing the following: 
 
 #. project name 
@@ -78,6 +80,8 @@ The RNA type inputs are include nothing, :code:`aRNA`, or :code:`non_stranded_RN
 .. list-table:: 
    :header-rows: 1
 
+   * - Parameter
+     - Description
    * - :code:`aRNA yes`
      - use antisense reads during counting, default no
    * - :code:`non_stranded yes`
