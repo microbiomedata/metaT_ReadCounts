@@ -112,8 +112,6 @@ The main read count table output is named by prefix.readcount.
      - Description
    * - nmdc_xxxxxxx.rnaseq_gea.txt
      - main read count table output
-   * - nmdc_xxxxxxx.rnaseq_gea.intergenic.txt
-     - table of intergenic read counts
    * - nmdc_xxxxxxx.readcount.stats.log
      - read count statistics
    * - nmdc_xxxxxxx_readcount.info
