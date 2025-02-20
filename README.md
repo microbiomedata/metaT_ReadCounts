@@ -66,7 +66,6 @@ The main read count table output is named by prefix.readcount.
 
 ```
 |-- nmdc_xxxxxxx.readcount
-|-- nmdc_xxxxxxx.readcount.intergenic
 |-- nmdc_xxxxxxx.readcount.Stats.log
 |-- nmdc_xxxxxxx_readcount.info
 ```
