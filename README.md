@@ -65,7 +65,7 @@ The output will have one directory named by prefix project name and a bunch of o
 The main read count table output is named by prefix.readcount. 
 
 ```
-|-- nmdc_xxxxxxx.readcount
+|-- nmdc_xxxxxxx.rnaseq_gea.txt
 |-- nmdc_xxxxxxx.readcount.Stats.log
 |-- nmdc_xxxxxxx_readcount.info
 ```
