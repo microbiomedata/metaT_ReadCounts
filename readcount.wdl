@@ -19,6 +19,7 @@ workflow readcount {
     input: 
     rna_type=rna_type,
     gff = gff,
+    bam = bam, 
     map_in = map,
     container = container,
     cpu = cpu,
@@ -28,8 +29,8 @@ workflow readcount {
 
   call count {
     input: 
-    bam = bam, 
-    gff = gff, 
+    bam = prepare.renamed_bam, 
+    gff = prepare.renamed.gff, 
     proj_id = proj_id,
     map = prepare.map_out, 
     rna_type=prepare.type_list[0], 
@@ -80,7 +81,10 @@ workflow readcount {
 task prepare  {
   input{
     String? rna_type 
+    File bam
+    String out_bam = "renamed_input.bam"
     File gff
+    String out_gff = "renamed_input.gff"
     File? map_in
     Boolean mapped = if (defined(map_in)) then true else false
     String mapfile = "mapfile.map" 
@@ -92,8 +96,12 @@ task prepare  {
 
   command <<<
     set -eou pipefail
-    # generate map file from gff scaffold names
+    # rename bam and gff file to recognize suffix from URL submission 
+    ln -s ~{bam} ./~{out_bam} || ln ~{bam} ./~{out_bam}
+    ln -s ~{gff} ./~{out_gff} || ln ~{gff} ./~{out_gff}
 
+
+    # generate map file from gff scaffold names
     if [ "~{mapped}"  = true ] ; then
       ln -s ~{map_in} ~{mapfile} || ln ~{map_in} ~{mapfile}  
       else  
@@ -112,6 +120,8 @@ task prepare  {
   >>>
 
   output{
+    File renamed_bam = out_bam
+    File renamed_gff = out_gff
     File map_out = "mapfile.map" 
     Array[String] type_list=read_lines(stdout())
    }
