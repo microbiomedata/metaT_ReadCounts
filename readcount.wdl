@@ -30,7 +30,7 @@ workflow readcount {
   call count {
     input: 
     bam = prepare.renamed_bam, 
-    gff = prepare.renamed.gff, 
+    gff = prepare.renamed_gff, 
     proj_id = proj_id,
     map = prepare.map_out, 
     rna_type=prepare.type_list[0], 
