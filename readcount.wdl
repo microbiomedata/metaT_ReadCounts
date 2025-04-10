@@ -5,9 +5,9 @@ workflow readcount {
 
   input{
     String proj_id
-    File bam
-    File gff
-    File? map
+    String bam
+    String gff
+    String? map
     String rna_type = " "
     String container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
     Int cpu = 1
@@ -29,8 +29,10 @@ workflow readcount {
 
   call count {
     input: 
-    bam = prepare.renamed_bam, 
-    gff = prepare.renamed_gff, 
+    # bam = prepare.renamed_bam, 
+    # gff = prepare.renamed_gff, 
+    bam = bam,
+    gff = gff,
     proj_id = proj_id,
     map = prepare.map_out, 
     rna_type=prepare.type_list[0], 
