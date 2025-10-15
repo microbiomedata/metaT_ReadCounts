@@ -1,23 +1,28 @@
 # metaT read count workflow
 version 1.0
 
+import "https://bitbucket.org/dongyingwu/dywu_wdl/raw/1ab980f6141b4e4ec2e9e5ad046716a98d11452a/readcount.wdl" as rc 
+
 workflow readcount {
 
   input{
     String proj_id
+    String count_out = "rnaseq_gea"
     String bam
     String gff
     String? map
-    String rna_type = " "
+    String? rg_file
+    String rna_type = "RNA" # RNA, aRNA (antisense RNA), non_stranded_RNA (nonstranded)
     String container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
     Int cpu = 1
-    String memory = "100G"
-    String time = "360"
+    String memory = "10G"
+    Int time = 360
+    String rc_mem = "100G"
+    String rc_time = 360
   }
 
   call prepare {
     input: 
-    rna_type=rna_type,
     gff = gff,
     map_in = map,
     container = container,
@@ -26,17 +31,16 @@ workflow readcount {
     time = time
     }
 
-  call count {
+  call rc.readcount as count {
     input: 
     bam = bam,
-    gff = gff,
-    proj_id = proj_id,
     map = prepare.map_out, 
-    rna_type=prepare.type_list[0], 
-    container = container,
-    cpu = cpu,
-    memory = memory,
-    time = time
+    gff = gff,
+    rg_file = rg_file,
+    out = count_out,
+    type=rna_type, 
+    memory = rc_mem,
+    runtime_minutes = rc_time
     } 
 
   call make_info_file{
@@ -51,9 +55,8 @@ workflow readcount {
   call finish_count {
     input:
     proj_id = proj_id, 
-    count_table = count.tab,
-    count_ig = count.ig,
-    count_log = count.log,
+    count_out = count_out,
+    count_dir = count.final_output,
     readcount_info = make_info_file.readcount_info,
     container = container,
     cpu = cpu,
@@ -79,7 +82,6 @@ workflow readcount {
 
 task prepare  {
   input{
-    String? rna_type 
     File gff
     File? map_in
     Boolean mapped = if (defined(map_in)) then true else false
@@ -99,20 +101,10 @@ task prepare  {
           awk '{print $1 "\t" $1}' ~{gff} > ~{mapfile}
      fi
 
-    if [ ~{rna_type} == 'aRNA' ]
-      then 
-        echo '-aRNA yes'
-    elif [ ~{rna_type} == 'non_stranded_RNA' ] 
-      then
-        echo '-non_stranded yes'
-    else
-        echo '  '
-    fi
   >>>
 
   output{
     File map_out = "mapfile.map" 
-    Array[String] type_list=read_lines(stdout())
    }
 
    runtime {
@@ -123,46 +115,6 @@ task prepare  {
     }
  }
 
-
-task count {
-  input{
-    File bam
-    File map
-    File gff
-    String proj_id
-    String prefix=sub(proj_id, ":", "_")
-    String rna_type
-    String container
-    Int cpu
-    String memory
-    String time
-  }
-
-  command <<< 
-    set -eou pipefail
-    ls -lah /usr/bin/readCov_metaTranscriptome_2k20.pl
-    readCov_metaTranscriptome_2k20.pl  \
-    -b ~{bam} \
-    -m ~{map} \
-    -g ~{gff} \
-    -o "~{prefix}.rnaseq_gea" \
-    ~{rna_type}
-  >>>
-
-  output{
-   File  tab = "~{prefix}.rnaseq_gea"
-   File? log="~{prefix}.rnaseq_gea.Stats.log"
-   File? ig="~{prefix}.rnaseq_gea.intergenic"
-  }
- 
-    runtime {
-        docker: container
-        cpu: cpu
-        memory: memory
-        runtime_minutes: time
-    }
-
-}
 
 task make_info_file {
   input{
@@ -178,6 +130,8 @@ task make_info_file {
     set -euo pipefail
     echo -e "MetaT Workflow - Read Counts Info File" > ~{prefix}_readcount.info
     echo -e "This workflow outputs a tab separated read count file from BAM and GFF using SAMTOOLS(1):" >> ~{prefix}_readcount.info
+    echo -e "See https://github.com/microbiomedata/metaT_ReadCounts or"  >> ~{prefix}_readcount.info
+    echo -e "https://bitbucket.org/dongyingwu/dywu_wdl/src/main/README.txt for more details."  >> ~{prefix}_readcount.info
     echo -e "`samtools --version | head -2`"  >> ~{prefix}_readcount.info
 
     echo -e "\nContainer: ~{container}"  >> ~{prefix}_readcount.info
@@ -200,24 +154,30 @@ task make_info_file {
 
 task finish_count {
   input {
-    File   count_table
-    File?  count_log
-    File?  count_ig
+    File   count_dir
     File   readcount_info
     String proj_id
     String prefix=sub(proj_id, ":", "_")
+    String count_out
     String container
     Int cpu
     String memory
     String time
+    File  count_table = "~{count_dir}/~{count_out}"
+    File count_ig="~{count_dir}/~{count_out}.intergenic"
+    File count_log="~{count_dir}/~{count_out}.Stats.log"
   }
 
     command<<<
       set -oeu pipefail
       end=`date --iso-8601=seconds`
       ln ~{count_table} ~{prefix}.rnaseq_gea.txt || ln -s ~{count_table} ~{prefix}.rnaseq_gea.txt
-      ~{if defined(count_ig) then "ln ~{count_ig} ~{prefix}.rnaseq_gea.intergenic.txt || ln -s ~{count_ig} ~{prefix}.rnaseq_gea.intergenic.txt" else ""}
-      ~{if defined(count_log) then "ln ~{count_log} ~{prefix}.readcount.stats.log || ln -s ~{count_log} ~{prefix}.readcount.stats.log" else ""}
+      if [ -f "~{count_ig}" ]; then
+        ln ~{count_ig} ~{prefix}.rnaseq_gea.intergenic.txt || ln -s ~{count_ig} ~{prefix}.rnaseq_gea.intergenic.txt
+      fi
+      if [ -f "~{count_log}" ]; then
+        ln ~{count_log} ~{prefix}.readcount.stats.log || ln -s ~{count_log} ~{prefix}.readcount.stats.log
+      fi
       ln ~{readcount_info} ~{prefix}_readcount.info || ln -s ln ~{readcount_info} ~{prefix}_readcount.info
     >>>
     output {

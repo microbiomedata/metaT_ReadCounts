@@ -1,7 +1,7 @@
 # The Data Preprocessing workflow
 
 ## Summary
-This repository is based off JGI's metatranscriptomic analysis package for transcriptomic reads and uses SAMTOOLS (1.15) in the pipeline `readCov_metaTranscriptome_2k20.pl` to generate a tab separated read count file from BAM and GFF files. 
+This repository is based off JGI's metatranscriptomic analysis package for transcriptomic reads and uses SAMTOOLS (1.15) in the pipeline `ReadCov.py` to generate a tab separated read count file from BAM and GFF files. 
 
 ## Running Workflow in Cromwell
 
@@ -14,7 +14,7 @@ Description of the files:
 
 ## The Docker image and Dockerfile can be found here
 
-[dongyingwu/rnaseqct:1.1](https://hub.docker.com/r/dongyingwu/rnaseqct/)
+[dongyingwu/rnaseqct:2.0](https://hub.docker.com/r/dongyingwu/rnaseqct/)
 
 
 ## Input files
@@ -26,19 +26,21 @@ The inputs for this workflow are as follows:
 3. GFF File
 4. (optional) Map file
 5. (optional) RNA type
+6. (optional) Read group file
+7. (optional) Memory and time 
 
 ```
 {
     "readcount.proj_id":"nmdc:xxxxxxx",
     "readcount.bam": "./test_files/nmdc_xxxxxxx_pairedMapped_sorted.bam",
     "readcount.gff": "./test_files/nmdc_xxxxxxx_functional_annotation.gff",
-    "readcount.rna_type": "aRNA",
+    "readcount.rna_type": "RNA",
     "readcount.map": "./test_files/mapfile.map"
 }
 ```
 
 The map file connects the naming schemes between the GFF and BAM files. If the naming scheme is the same, the map file can either be generated automatically if none is specified, or user can make a tsv with two columns of the names from the GFF file. 
-The RNA type inputs are include nothing, `aRNA`, or `non_stranded_RNA`, which are transformed to script inputs `(default)`, `-aRNA yes`, or `-non_stranded yes`, respectively. This is the explanation from the script itself:
+The RNA type inputs are include `RNA`, `aRNA` (antisense RNA), `non_stranded_RNA` (nonstranded). This is the explanation from the script itself:
 
 ```
     -aRNA: yes (means use antisense reads during counting,default no)
@@ -50,12 +52,12 @@ The RNA type inputs are include nothing, `aRNA`, or `non_stranded_RNA`, which ar
 The script is called as such within the WDL.
 
 ```
-  readCov_metaTranscriptome_2k20.pl  \
-      -b ~{bam} \       # input BAM
-      -m ~{map} \       # map file auto generated or user upload
-      -g ~{gff} \       # input GFF
-      -o ~{out} \       # prefix for output files (project ID)
-      ~{rna_type}       # left blank, '-aRNA yes', or '-non_stranded yes'
+   ReadCov.py  \
+      -b ~{bam} \               # input BAM
+      -m ~{map} \               # map file auto generated or user upload
+      -g ~{gff} \               # input GFF
+      -o final_output/~{out} \  # prefix for output files (project ID)
+      ~{rna_type}               # RNA, aRNA, non_stranded_RNA
 ```
 
 ## Output files
@@ -65,30 +67,14 @@ The output will have one directory named by prefix project name and a bunch of o
 The main read count table output is named by prefix.readcount. 
 
 ```
-|-- nmdc_xxxxxxx.rnaseq_gea.txt
-|-- nmdc_xxxxxxx.readcount.Stats.log
 |-- nmdc_xxxxxxx_readcount.info
+|-- nmdc_xxxxxxx.readcount.stats.log
+|-- nmdc_xxxxxxx.rnaseq_gea.intergenic.txt
+|-- nmdc_xxxxxxx.rnaseq_gea.txt
 ```
 
-### Description of IMG metatranscriptome data file.
+### Columns in the data file
 
-IMG provides expression values and read counts for gene features predicted on the contigs, be
-it self-assembly of metatranscriptome or another dataset to which the metatranscriptome reads 
-were mapped. Expression values are computed as mean and median per-base coverage of the 
-sequence within the coordinates of the feature.
-
-Since JGI generally generates stranded libraries, expression values and read counts for two 
-strands are computed and reported separately. These values are NOT expression values and 
-read counts of direct and reverse strand of the contig; instead these are expression values and 
-read counts of the predicted feature (i. e. reads generated for the same strand on which the 
-feature was predicted) and of the opposite strand of the predicted feature. Essentially this 
-"expected" read coverage (in a sense of being generated from the strand that we expect to be 
-expressed) and "unexpected" read coverage (i. e. generated from the strand that we did not 
-expect to be expressed based on structural annotation of the sequence). For obvious reasons, 
-some of the "unexpected" coverage is the result of imperfect structural annotation, which is 
-not uncommon for short contigs in metaT self assembly.
-
-Specific columns in the file:
 | Column | Description |
 | ------------- | ------------- |
 | `img_gene_oid` | gene_oid of the gene for which expression is counted |
@@ -106,3 +92,6 @@ Specific columns in the file:
 | `meanA` | mean expression of the opposite strand of the predicted gene, i. e. mean per-base coverage of the strand opposite to that on which the gene was predicted within the coordinates of the predicted gene |
 | `medianA` | median expression of the opposite strand of the predicted gene, i. e. median per-base coverage of the strand opposite to that on which the gene was predicted within the coordinates of the predicted gene |
 | `stdevA` | standard deviation of the expression of the opposite strand of the predicted gene |
+
+
+For more information, please refer to the [IMG documentation](https://bitbucket.org/dongyingwu/dywu_wdl/src/main/README.txt).
