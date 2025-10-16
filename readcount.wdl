@@ -6,19 +6,19 @@ import "https://bitbucket.org/dongyingwu/dywu_wdl/raw/1ab980f6141b4e4ec2e9e5ad04
 workflow readcount {
 
   input{
-    String proj_id
-    String count_out = "rnaseq_gea"
-    String bam
-    String gff
+    String  proj_id
+    String  count_out = "rnaseq_gea"
+    String  bam
+    String  gff
     String? map
     String? rg_file
-    String rna_type = "RNA" # RNA, aRNA (antisense RNA), non_stranded_RNA (nonstranded)
-    String container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
-    Int cpu = 1
-    String memory = "10G"
-    Int time = 360
-    String rc_mem = "100G"
-    String rc_time = 360
+    String  rna_type = "RNA" # RNA, aRNA (antisense RNA), non_stranded_RNA (nonstranded)
+    String  container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
+    Int     cpu = 1
+    String  memory = "10G"
+    Int     time = 360
+    String  rc_mem = "100G"
+    String  rc_time = 360
   }
 
   call prepare {
@@ -65,10 +65,10 @@ workflow readcount {
   }
 
   output{
-    File count_table = finish_count.final_count_table
+    File  count_table = finish_count.final_count_table
     File? count_ig = finish_count.final_count_ig
     File? count_log = finish_count.final_count_log
-    File readcount_info = finish_count.final_readcount_info
+    File  readcount_info = finish_count.final_readcount_info
    
   }
   parameter_meta {
@@ -82,14 +82,14 @@ workflow readcount {
 
 task prepare  {
   input{
-    File gff
-    File? map_in
+    File    gff
+    File?   map_in
     Boolean mapped = if (defined(map_in)) then true else false
-    String mapfile = "mapfile.map" 
-    String container
-    Int cpu
-    String memory
-    String time
+    String  mapfile = "mapfile.map" 
+    String  container
+    Int     cpu
+    String  memory
+    String  time
   }
 
   command <<<
@@ -97,9 +97,9 @@ task prepare  {
     # generate map file from gff scaffold names
     if [ "~{mapped}"  = true ] ; then
       ln -s ~{map_in} ~{mapfile} || ln ~{map_in} ~{mapfile}  
-      else  
-          awk '{print $1 "\t" $1}' ~{gff} > ~{mapfile}
-     fi
+    else  
+      awk '{print $1 "\t" $1}' ~{gff} > ~{mapfile}
+    fi
 
   >>>
 
@@ -108,10 +108,10 @@ task prepare  {
    }
 
    runtime {
-        docker: container
-        cpu: cpu
-        memory: memory
-        runtime_minutes: time
+    docker: container
+    cpu: cpu
+    memory: memory
+    runtime_minutes: time
     }
  }
 
@@ -119,7 +119,7 @@ task prepare  {
 task make_info_file {
   input{
     String container
-    Int cpu
+    Int    cpu
     String memory
     String time
     String proj_id
@@ -144,10 +144,10 @@ task make_info_file {
   }
  
     runtime {
-        docker: container
-        cpu: cpu
-        memory: memory
-        runtime_minutes: time
+      docker: container
+      cpu: cpu
+      memory: memory
+      runtime_minutes: time
     }
 
 }
@@ -160,12 +160,12 @@ task finish_count {
     String prefix=sub(proj_id, ":", "_")
     String count_out
     String container
-    Int cpu
+    Int    cpu
     String memory
     String time
-    File  count_table = "~{count_dir}/~{count_out}"
-    File count_ig="~{count_dir}/~{count_out}.intergenic"
-    File count_log="~{count_dir}/~{count_out}.Stats.log"
+    File   count_table = "~{count_dir}/~{count_out}"
+    File?  count_ig="~{count_dir}/~{count_out}.intergenic"
+    File?  count_log="~{count_dir}/~{count_out}.Stats.log"
   }
 
     command<<<
@@ -181,16 +181,16 @@ task finish_count {
       ln ~{readcount_info} ~{prefix}_readcount.info || ln -s ln ~{readcount_info} ~{prefix}_readcount.info
     >>>
     output {
-        File final_count_table = "~{prefix}.rnaseq_gea.txt"
-        File? final_count_ig = "~{prefix}.rnaseq_gea.intergenic.txt"
-        File? final_count_log = "~{prefix}.readcount.stats.log"
-        File final_readcount_info = "~{prefix}_readcount.info"
+      File  final_count_table = "~{prefix}.rnaseq_gea.txt"
+      File? final_count_ig = "~{prefix}.rnaseq_gea.intergenic.txt"
+      File? final_count_log = "~{prefix}.readcount.stats.log"
+      File  final_readcount_info = "~{prefix}_readcount.info"
     }
 
     runtime {
-        docker: container
-        cpu: cpu
-        memory: memory
-        runtime_minutes: time
+      docker: container
+      cpu: cpu
+      memory: memory
+      runtime_minutes: time
     }
 }
