@@ -163,9 +163,9 @@ task finish_count {
     Int    cpu
     String memory
     String time
-    File   count_table = "~{count_dir}/~{count_out}"
-    File?  count_ig="~{count_dir}/~{count_out}.intergenic"
-    File?  count_log="~{count_dir}/~{count_out}.Stats.log"
+    String count_table = "~{count_dir}/~{count_out}"
+    String count_ig="~{count_dir}/~{count_out}.intergenic"
+    String count_log="~{count_dir}/~{count_out}.Stats.log"
   }
 
     command<<<

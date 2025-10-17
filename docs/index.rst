@@ -129,13 +129,32 @@ The main read count table output is named by prefix.readcount.
 This is a sample of the read count statistics
 
 .. code-block::
-   Total reads mapped 	1534181
-   Total reads mapped to genes	1533976
-   Expected reads for genes on plus strand	374173
-   Unexpected reads for genes on plus strand	373392
-   Expected reads for genes on minus strand	393149
-   Unexpected reads for genes on minus strand	393262
-   Overall percentage of expected mapping	50.02%
+  All reads mapped 1240475             # (count of mapped reads)
+  final_output/rnaseq_gea             # (the qc only applies to the gene mapping file)
+  Overall_Expected_Mapping 50.02%     # (Overall_Expected_Mapping: expected_read_count_to_genes/sum_of_read_count_to_genes)
+  Gene_Strandness 9.8%                # (Gene_Strandness = (antisense_gene_number + expected_expression_gene_number)/total_genes_with_mapped_reads
+                                      # only genes with >=90% reads mapped to one strand is include in either antisense_gene_number or expected_expression_gene_number
+  
+  [4.9,0.6,2.2,9.7,41.0,26.7,7.3,2.4,0.2,5.0] # for visualization of the gene_strandness distribution
+      # Expected_Mapping    gene_percentage
+      # 0-10                 4.9            
+      # 10-20                0.6 
+      # 20-30                2.2 
+      # 30-40                9.7
+      # 40-50                41.0
+      # 50-60                26.7 
+      # 60-70                7.3 
+      # 70-80                2.4
+      # 80-90                0.2
+      # 90-100               5.0         
+       
+  contig_len|200|480|540|687|8898 # contig length distribution, extra long contigs usually indicates contamination 
+    # min    200
+    # Q1     480
+    # Q2     540
+    # Q3     687
+    # max   8898
+
 
 
 Description of IMG metatranscriptome data file
