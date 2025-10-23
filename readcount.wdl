@@ -13,7 +13,7 @@ workflow readcount {
     String? map
     String? rg_file
     String  rna_type = "RNA" # RNA, aRNA (antisense RNA), non_stranded_RNA (nonstranded)
-    String  container = "dongyingwu/rnaseqct@sha256:e7418cc7a5a58eb138c3b739608d2754a05fa3648b5881befbfbb0bb2e62fa95"
+    String  container = "dongyingwu/rnaseqct@sha256:58966198b7b1270a14c0a097537ca1158ad4c8031eb300117c5a5592a116f75d"
     Int     cpu = 1
     String  memory = "10G"
     Int     time = 360
