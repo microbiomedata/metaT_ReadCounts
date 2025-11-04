@@ -6,7 +6,7 @@
          site the file is incorporated into. You can learn more about the `github_url` field at:
          https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html#confval-github_url
 
-MetaT Read Counts Workflow (v0.0.5)
+Metatranscriptome Read Counts Workflow
 =============================
 
 .. image:: mt_rc_workflow2024.png
@@ -16,25 +16,25 @@ MetaT Read Counts Workflow (v0.0.5)
 Workflow Overview
 -----------------
 This workflow generates tab separated read count files from BAM and GFF files. 
-The repository is based off JGI's metatranscriptomic analysis package for transcriptomic reads and uses SAMTOOLS (1.15) in the pipeline :code:`readCov_metaTranscriptome_2k20.pl`.
+The repository is based off JGI's metatranscriptomic analysis package for transcriptomic reads and uses SAMTOOLS (1.15) in the pipeline :code:`ReadCov.py`.
 
 The script is called as such within the WDL.
 
 .. code-block:: bash
 
-   readCov_metaTranscriptome_2k20.pl \
-         -b ~{bam} \       # input BAM
-         -m ~{map} \       # map file auto generated or user upload
-         -g ~{gff} \       # input GFF
-         -o ~{out} \       # prefix for output files (project ID)
-         ~{rna_type}       # left blank, '-aRNA yes', or '-non_stranded yes'
+   ReadCov.py  \
+      -b ~{bam} \               # input BAM
+      -m ~{map} \               # map file auto generated or user upload
+      -g ~{gff} \               # input GFF
+      -o final_output/~{out} \  # prefix for output files (project ID)
+      ~{rna_type}               # RNA, aRNA, non_stranded_RNA
 
 
 Workflow Availability
 ---------------------
 The workflow is available in GitHub: https://github.com/microbiomedata/metaT_ReadCounts/ and the corresponding Docker image is available in DockerHub: 
 
-* `dongyingwu/rnaseqct:1.1 <https://hub.docker.com/r/dongyingwu/rnaseqct>`_
+* `dongyingwu/rnaseqct:2.0 <https://hub.docker.com/r/dongyingwu/rnaseqct>`_
 
 
 Requirements for Execution (recommendations are in italics):  
@@ -54,7 +54,7 @@ Workflow Dependencies
 Third party software (These are included in the Docker image.)  
 
 * SAMTOOLS v1.15 (MIT/Expat)
-* readCov_metaTranscriptome_2k20.pl
+* ReadCov.py
 
 
 Sample datasets   
@@ -77,6 +77,8 @@ A JSON file containing the following:
 #. GFF Functional Annotation File
 #. (optional) Map file
 #. (optional) RNA type
+#. (optional) Read Group file
+#. (optional) Memory and time 
 
 An example JSON file is shown below:
 
@@ -90,7 +92,7 @@ An example JSON file is shown below:
 
 
 The map file connects the naming schemes between the GFF and BAM files. If the naming scheme is the same, the map file can either be generated automatically if none is specified, or user can make a tsv with two columns of the names from the GFF file. 
-The RNA type inputs are include nothing, :code:`aRNA`, or :code:`non_stranded_RNA`, which are transformed to script inputs :code:`(default blank)`, :code:`-aRNA yes`, or :code:`-non_stranded yes`, respectively. This is the explanation from the script itself:
+The RNA type inputs are include :code:`RNA`, :code:`aRNA` (antisense RNA), and :code:`non_stranded_RNA` (nonstranded). This is the explanation from the script itself:
 
 .. list-table:: 
    :header-rows: 1
@@ -127,13 +129,32 @@ The main read count table output is named by prefix.readcount.
 This is a sample of the read count statistics
 
 .. code-block::
-   Total reads mapped 	1534181
-   Total reads mapped to genes	1533976
-   Expected reads for genes on plus strand	374173
-   Unexpected reads for genes on plus strand	373392
-   Expected reads for genes on minus strand	393149
-   Unexpected reads for genes on minus strand	393262
-   Overall percentage of expected mapping	50.02%
+  All reads mapped 1240475            # count of mapped reads
+  final_output/rnaseq_gea             # the qc only applies to the gene mapping file
+  Overall_Expected_Mapping 50.02%     # Overall_Expected_Mapping = (expected_read_count_to_genes/sum_of_read_count_to_genes)
+  Gene_Strandness 9.8%                # Gene_Strandness = (antisense_gene_number + expected_expression_gene_number)/total_genes_with_mapped_reads
+                                      # only genes with >=90% reads mapped to one strand is include in either antisense_gene_number or expected_expression_gene_number
+  
+  [4.9,0.6,2.2,9.7,41.0,26.7,7.3,2.4,0.2,5.0] # for visualization of the gene_strandness distribution
+      # Expected_Mapping    gene_percentage
+      # 0-10                 4.9            
+      # 10-20                0.6 
+      # 20-30                2.2 
+      # 30-40                9.7
+      # 40-50                41.0
+      # 50-60                26.7 
+      # 60-70                7.3 
+      # 70-80                2.4
+      # 80-90                0.2
+      # 90-100               5.0         
+       
+  contig_len|200|480|540|687|8898 # contig length distribution, extra long contigs usually indicates contamination 
+    # min    200
+    # Q1     480
+    # Q2     540
+    # Q3     687
+    # max   8898
+
 
 
 Description of IMG metatranscriptome data file
@@ -181,10 +202,12 @@ Specific columns in the file:
    * - :code:`stdevA`
      - standard deviation of the expression of the opposite strand of the predicted gene
 
+For more information, please refer to the [IMG documentation](https://bitbucket.org/dongyingwu/dywu_wdl/src/main/README.txt).
 
 Version History
 ---------------
 
+* 0.0.6 (release date *10/14/2025*)
 * 0.0.5 (release date *08/20/2024*)
 
 
@@ -193,4 +216,4 @@ Point of contact
 
 * Original author: Dongying Wu <dongyingwu@lbl.gov>
 
-* Package maintainers: Kaitlyn Li <kli@lanl.gov>
+* Repository maintainers: Kaitlyn Li <kli@lanl.gov>
