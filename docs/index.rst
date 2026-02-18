@@ -216,4 +216,4 @@ Point of contact
 
 * Original author: Dongying Wu <dongyingwu@lbl.gov>
 
-* Repository maintainers: Kaitlyn Li <kli@lanl.gov>
+* Repository maintainers: Samantha Obermiller samantha.obermiller@pnnl.gov
